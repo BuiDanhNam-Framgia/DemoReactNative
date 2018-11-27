@@ -3,28 +3,52 @@
  * https://github.com/facebook/react-native
  *
  * @format
- * @flow
+ * @flowll
  */
 
-import React, {Component} from 'react';
-import {Platform, StyleSheet, Text, View} from 'react-native';
+import React, { Component } from "react";
+import { Platform, StyleSheet, Text, View } from "react-native";
+import CounterContainer from "./src/containers/CounterContainer";
+import { Provider } from "react-redux";
+import store from "./src/store/Store";
+import TaskListContainer from "./src/containers/TaskListContainer";
+import AddViewContainer from "./src/containers/AddViewContainer";
 
-const instructions = Platform.select({
-  ios: 'Press Cmd+R to reload,\n' + 'Cmd+D or shake for dev menu',
-  android:
-    'Double tap R on your keyboard to reload,\n' +
-    'Shake or press menu button for dev menu',
-});
+export default class App extends Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      text: ""
+    };
+  }
+  onAddNewTask = taskName => {
+    const newTask = { title: taskName, isFinished: false };
+    const newTaskList = [...this.state.data, newTask];
+    this.setState({ text: taskName });
+    this.setState({ ...this.state, data: newTaskList });
+  };
+  onFinishedItem = index => {
+    let newTaskList = this.state.data;
+    let state = newTaskList[index].isFinished;
+    newTaskList[index].isFinished = !state;
+    this.setState({ data: newTaskList });
+  };
+  onDeleteItem = index => {
+    let newTaskList = this.state.data.filter((item, i) => i != index);
+    this.setState({ data: newTaskList });
+  };
 
-type Props = {};
-export default class App extends Component<Props> {
   render() {
     return (
-      <View style={styles.container}>
-        <Text style={styles.welcome}>Welcome to React Native!</Text>
-        <Text style={styles.instructions}>To get started, edit App.js</Text>
-        <Text style={styles.instructions}>{instructions}</Text>
-      </View>
+      <Provider store={store}>
+        <View style={styles.container}>
+          <View style={styles.textViewHeader}>
+            <Text style={styles.textContain}>{titleApp}</Text>
+          </View>
+          <CounterContainer />
+          <TaskListContainer />
+        </View>
+      </Provider>
     );
   }
 }
@@ -32,18 +56,28 @@ export default class App extends Component<Props> {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#F5FCFF',
+    backgroundColor: "#FAFAFA"
   },
-  welcome: {
-    fontSize: 20,
-    textAlign: 'center',
-    margin: 10,
+  textViewHeader: {
+    height: 50,
+    backgroundColor: "green",
+    alignItems: "center",
+    justifyContent: "center",
+    shadowColor: "",
+    shadowOffset: {
+      width: 0,
+      height: 2
+    },
+    elevation: 5,
+    shadowOpacity: 0.2
   },
-  instructions: {
-    textAlign: 'center',
-    color: '#333333',
-    marginBottom: 5,
-  },
+  textContainHeader: {
+    fontSize: 18,
+    color: "white",
+    marginTop: Platform.select({
+      android: 0,
+      ios: 20
+    })
+  }
 });
+const titleApp = "Test App React Native ";
